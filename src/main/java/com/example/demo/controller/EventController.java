@@ -24,7 +24,7 @@ public class EventController {
     public ResponseEntity<?> uploadFiles(@RequestParam("files") MultipartFile[] files, @RequestParam("tenantId") String tenantId) {
         try {
             for (MultipartFile file : files) {
-                List<EventDto> events = eventService.parseCsv(file);
+                List<EventDto> events = eventService.parseCsvFile(file);
                 eventService.saveEvents(tenantId, events);
             }
             return ResponseEntity.ok("Uploaded successfully!");

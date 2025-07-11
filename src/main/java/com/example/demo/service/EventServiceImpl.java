@@ -4,12 +4,10 @@ import com.example.demo.dto.EventDto;
 import com.example.demo.persistence.entities.Event;
 import com.example.demo.persistence.repositories.EventRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,12 +36,15 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<EventDto> parseCsv(MultipartFile file) throws IOException {
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
+    public List<EventDto> parseCsvFile(MultipartFile file) throws RuntimeException {
+        try {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
             return reader.lines()
                     .map(line -> line.split(","))
                     .map(parts -> new EventDto(Long.parseLong(parts[0]), Integer.parseInt(parts[1])))
                     .collect(Collectors.toList());
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to parse CSV: " + e.getMessage(), e);
         }
     }
 }
